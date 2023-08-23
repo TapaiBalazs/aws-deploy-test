@@ -1,0 +1,74 @@
+{
+  "name": "aws-deploy",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/aws-deploy/src",
+  "projectType": "application",
+  "targets": {
+    "build": {
+      "executor": "@nx/webpack:webpack",
+      "outputs": [
+        "{options.outputPath}"
+      ],
+      "defaultConfiguration": "production",
+      "options": {
+        "target": "node",
+        "compiler": "tsc",
+        "outputPath": "dist/apps/aws-deploy",
+        "main": "apps/aws-deploy/src/main.ts",
+        "tsConfig": "apps/aws-deploy/tsconfig.app.json",
+        "assets": [
+          "apps/aws-deploy/src/assets"
+        ],
+        "isolatedConfig": true,
+        "webpackConfig": "apps/aws-deploy/webpack.config.js"
+      },
+      "configurations": {
+        "development": {},
+        "production": {}
+      }
+    },
+    "serve": {
+      "executor": "@nx/js:node",
+      "defaultConfiguration": "development",
+      "options": {
+        "buildTarget": "aws-deploy:build"
+      },
+      "configurations": {
+        "development": {
+          "buildTarget": "aws-deploy:build:development"
+        },
+        "production": {
+          "buildTarget": "aws-deploy:build:production"
+        }
+      }
+    },
+    "lint": {
+      "executor": "@nx/linter:eslint",
+      "outputs": [
+        "{options.outputFile}"
+      ],
+      "options": {
+        "lintFilePatterns": [
+          "apps/aws-deploy/**/*.ts"
+        ]
+      }
+    },
+    "test": {
+      "executor": "@nx/jest:jest",
+      "outputs": [
+        "{workspaceRoot}/coverage/{projectRoot}"
+      ],
+      "options": {
+        "jestConfig": "apps/aws-deploy/jest.config.ts",
+        "passWithNoTests": true
+      },
+      "configurations": {
+        "ci": {
+          "ci": true,
+          "codeCoverage": true
+        }
+      }
+    }
+  },
+  "tags": []
+}
