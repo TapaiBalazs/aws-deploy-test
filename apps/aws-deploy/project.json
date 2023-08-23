@@ -6,9 +6,7 @@
   "targets": {
     "build": {
       "executor": "@nx/webpack:webpack",
-      "outputs": [
-        "{options.outputPath}"
-      ],
+      "outputs": ["{options.outputPath}"],
       "defaultConfiguration": "production",
       "options": {
         "target": "node",
@@ -16,15 +14,19 @@
         "outputPath": "dist/apps/aws-deploy",
         "main": "apps/aws-deploy/src/main.ts",
         "tsConfig": "apps/aws-deploy/tsconfig.app.json",
-        "assets": [
-          "apps/aws-deploy/src/assets"
-        ],
+        "assets": ["apps/aws-deploy/src/assets"],
         "isolatedConfig": true,
         "webpackConfig": "apps/aws-deploy/webpack.config.js"
       },
       "configurations": {
         "development": {},
-        "production": {}
+        "production": {
+          "generatePackageJson": true,
+          "assets": [
+            "apps/aws-deploy/src/assets",
+            "apps/aws-deploy/src/Procfile"
+          ]
+        }
       }
     },
     "serve": {
@@ -44,20 +46,14 @@
     },
     "lint": {
       "executor": "@nx/linter:eslint",
-      "outputs": [
-        "{options.outputFile}"
-      ],
+      "outputs": ["{options.outputFile}"],
       "options": {
-        "lintFilePatterns": [
-          "apps/aws-deploy/**/*.ts"
-        ]
+        "lintFilePatterns": ["apps/aws-deploy/**/*.ts"]
       }
     },
     "test": {
       "executor": "@nx/jest:jest",
-      "outputs": [
-        "{workspaceRoot}/coverage/{projectRoot}"
-      ],
+      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
       "options": {
         "jestConfig": "apps/aws-deploy/jest.config.ts",
         "passWithNoTests": true
