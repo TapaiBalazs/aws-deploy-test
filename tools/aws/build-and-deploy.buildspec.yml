@@ -1,0 +1,20 @@
+version: 0.2
+
+phases:
+  install:
+    runtime-versions:
+      nodejs: 18
+    on-failure: ABORT
+    commands:
+      - APP_VERSION=`jq '.version' -j package.json`
+      - API_VERSION=$APP_VERSION-build$CODEBUILD_BUILD_NUMBER
+      - API_ZIP_KEY=$COMMIT_ID-api.zip
+      - 'APP_VERSION_DESCRIPTION="$AP_VERSION: $COMMIT_ID"'
+      - npm ci
+  build:
+    on-failure: ABORT
+    commands:
+      # Build the front-end and the back-end
+      - npm run build:$ENVIRONMENT_TARGET
+      # TODO: Push FE to S3
+      # TODO: Push API to Elastic beanstalk
