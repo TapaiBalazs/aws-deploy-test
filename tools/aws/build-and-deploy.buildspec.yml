@@ -16,5 +16,6 @@ phases:
     commands:
       # Build the front-end and the back-end
       - npm run build:$ENVIRONMENT_TARGET
-      # TODO: Push FE to S3
+      # Deploy the front-end
+      - aws s3 sync dist/apps/frontend/ s3://$FRONT_END_BUCKET --delete
       # TODO: Push API to Elastic beanstalk
