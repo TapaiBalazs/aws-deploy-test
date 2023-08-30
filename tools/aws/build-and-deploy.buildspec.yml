@@ -20,4 +20,14 @@ phases:
       - aws s3 sync dist/apps/frontend/ s3://$FRONT_END_BUCKET --delete
       # Invalidate cloudfront caches to immediately serve the new front-end files
       - aws cloudfront create-invalidation --distribution-id $CLOUDFRONT_DISTRIBUTION_ID --paths "/index.html"
-      # TODO: Push API to Elastic beanstalk
+
+      # ZIP the API
+      - zip -r -j dist/apps/api.zip dist/apps/aws-deploy
+      # Upload the API bundle to S3
+      - aws s3 cp dist/apps/api.zip s3://$API_VERSION_BUCKET/$ENVIRONMENT_TARGET/$API_ZIP_KEY
+      # Create new API version
+      - aws elasticbeanstalk create-application-version --application-name "$ELASTIC_BEANSTALK_APPLICATION_NAME" --version-label "$API_VERSION" --description "$APP_VERSION_DESCRIPTION" --source-bundle "S3Bucket=$API_VERSION_BUCKET,S3Key=$ENVIRONMENT_TARGET/$API_ZIP_KEY"
+      # Deploy new API version
+      - aws elasticbeanstalk update-environment --application-name "$ELASTIC_BEANSTALK_APPLICATION_NAME" --version-label "$API_VERSION" --environment-name "$ELASTIC_BEANSTALK_ENVIRONMENT_NAME"
+      # Wait until the Elastic Beanstalk environment is stable
+      - aws elasticbeanstalk wait environment-updated --application-name "$ELASTIC_BEANSTALK_APPLICATION_NAME" --environment-name "$ELASTIC_BEANSTALK_ENVIRONMENT_NAME"
